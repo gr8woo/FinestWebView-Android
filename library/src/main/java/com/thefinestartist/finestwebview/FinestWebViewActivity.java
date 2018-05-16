@@ -553,6 +553,9 @@ public class FinestWebViewActivity extends AppCompatActivity
       float webLayoutMinimumHeight = screenHeight - toolbarHeight - statusBarHeight;
       if (showDivider && !gradientDivider) webLayoutMinimumHeight -= dividerHeight;
       webLayout.setMinimumHeight((int) webLayoutMinimumHeight);
+      
+      FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, (int)webLayoutMinimumHeight);
+      webView.setLayoutParams(lp);
     }
   }
 
