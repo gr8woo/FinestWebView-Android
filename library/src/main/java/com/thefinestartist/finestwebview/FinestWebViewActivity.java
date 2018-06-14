@@ -225,6 +225,7 @@ public class FinestWebViewActivity extends AppCompatActivity
   protected TextView menuOpenWithTv;
   protected FrameLayout webLayout;
 
+  WebView newWebView;
 
   private ValueCallback<Uri> filePathCallbackNormal;
   private ValueCallback<Uri[]> filePathCallbackLollipop;
