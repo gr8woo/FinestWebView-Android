@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.content.ActivityNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
@@ -1368,13 +1369,13 @@ public class FinestWebViewActivity extends AppCompatActivity
                 } else {
                     final String customUrl = url.substring(customUrlStartIndex, customUrlEndIndex);
                     try {
-                        getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(customUrl)));
+                        view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(customUrl)));
                     } catch (ActivityNotFoundException e) {
                         final int packageStartIndex = customUrlEndIndex + INTENT_PROTOCOL_INTENT.length();
                         final int packageEndIndex = url.indexOf(INTENT_PROTOCOL_END);
 
                         final String packageName = url.substring(packageStartIndex, packageEndIndex < 0 ? url.length() : packageEndIndex);
-                        getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(GOOGLE_PLAY_STORE_PREFIX + packageName)));
+                        view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(GOOGLE_PLAY_STORE_PREFIX + packageName)));
                     }
                     return true;
                 }
