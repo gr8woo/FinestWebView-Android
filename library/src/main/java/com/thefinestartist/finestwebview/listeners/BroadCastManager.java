@@ -157,12 +157,12 @@ public class BroadCastManager {
 
   public void onPageStarted(Intent intent) {
     for (WebViewListener listener : listeners)
-      listener.onPageStarted(intent.getStringExtra(EXTRA_URL));
+      listener.onPageStarted(intent.getStringExtra(EXTRA_URL), intent.getStringExtra(EXTRA_USER_AGENT));
   }
 
   public void onPageFinished(Intent intent) {
     for (WebViewListener listener : listeners)
-      listener.onPageFinished(intent.getStringExtra(EXTRA_URL));
+      listener.onPageFinished(intent.getStringExtra(EXTRA_URL), intent.getStringExtra(EXTRA_USER_AGENT));
   }
 
   public void onLoadResource(Intent intent) {

@@ -14,10 +14,10 @@ public abstract class WebViewListener {
   public void onReceivedTouchIconUrl(String url, boolean precomposed) {
   }
 
-  public void onPageStarted(String url) {
+  public void onPageStarted(String url, String userAgent) {
   }
 
-  public void onPageFinished(String url) {
+  public void onPageFinished(String url, String userAgent) {
   }
 
   public void onLoadResource(String url) {
