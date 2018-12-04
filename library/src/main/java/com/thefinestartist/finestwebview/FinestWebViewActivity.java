@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -56,6 +57,7 @@ import com.thefinestartist.finestwebview.helpers.ColorHelper;
 import com.thefinestartist.finestwebview.helpers.TypefaceHelper;
 import com.thefinestartist.finestwebview.helpers.UrlParser;
 import com.thefinestartist.finestwebview.listeners.BroadCastManager;
+import com.thefinestartist.finestwebview.listeners.OnWebViewClientListener;
 import com.thefinestartist.finestwebview.views.ShadowLayout;
 import com.thefinestartist.utils.etc.APILevel;
 import com.thefinestartist.utils.service.ClipboardManagerUtil;
@@ -186,10 +188,12 @@ public class FinestWebViewActivity extends AppCompatActivity
     protected Boolean webViewJavaScriptCanOpenWindowsAutomatically;
     protected String webViewDefaultTextEncodingName;
     protected String webViewUserAgentString;
+    protected Boolean webViewUserAgentIsAppendable;
     protected Boolean webViewNeedInitialFocus;
     protected Integer webViewCacheMode;
     protected Integer webViewMixedContentMode;
     protected Boolean webViewOffscreenPreRaster;
+    protected OnWebViewClientListener webViewClientListener = null;
 
     protected String injectJavaScript;
 
@@ -432,10 +436,12 @@ public class FinestWebViewActivity extends AppCompatActivity
                 builder.webViewJavaScriptCanOpenWindowsAutomatically;
         webViewDefaultTextEncodingName = builder.webViewDefaultTextEncodingName;
         webViewUserAgentString = builder.webViewUserAgentString;
+        webViewUserAgentIsAppendable = builder.webViewUserAgentIsAppendable;
         webViewNeedInitialFocus = builder.webViewNeedInitialFocus;
         webViewCacheMode = builder.webViewCacheMode;
         webViewMixedContentMode = builder.webViewMixedContentMode;
         webViewOffscreenPreRaster = builder.webViewOffscreenPreRaster;
+        webViewClientListener = builder.webViewClientListener;
 
         injectJavaScript = builder.injectJavaScript;
 
@@ -635,7 +641,7 @@ public class FinestWebViewActivity extends AppCompatActivity
 
         { // WebView
             webView.setWebChromeClient(new MyWebChromeClient());
-            webView.setWebViewClient(new MyWebViewClient());
+            webView.setWebViewClient(new MyWebViewClient(this.webViewClientListener));
             webView.setDownloadListener(downloadListener);
 
             WebSettings settings = webView.getSettings();
@@ -734,7 +740,15 @@ public class FinestWebViewActivity extends AppCompatActivity
             if (webViewDefaultTextEncodingName != null) {
                 settings.setDefaultTextEncodingName(webViewDefaultTextEncodingName);
             }
-            if (webViewUserAgentString != null) settings.setUserAgentString(webViewUserAgentString);
+
+            if (webViewUserAgentString != null) {
+                if (webViewUserAgentIsAppendable) {
+                    String defaultUserAgent = settings.getUserAgentString();
+                    settings.setUserAgentString(defaultUserAgent + " " + webViewUserAgentString);
+                } else {
+                    settings.setUserAgentString(webViewUserAgentString);
+                }
+            }
             if (webViewNeedInitialFocus != null)
                 settings.setNeedInitialFocus(webViewNeedInitialFocus);
             if (webViewCacheMode != null) settings.setCacheMode(webViewCacheMode);
@@ -1291,12 +1305,20 @@ public class FinestWebViewActivity extends AppCompatActivity
 
     public class MyWebViewClient extends WebViewClient {
 
+        private OnWebViewClientListener callback = null;
+
+        public MyWebViewClient(@Nullable OnWebViewClientListener callback) {
+            this.callback = callback;
+        }
+
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             BroadCastManager.onPageStarted(FinestWebViewActivity.this, key, url);
             if (!url.contains("docs.google.com") && url.endsWith(".pdf")) {
                 webView.loadUrl("http://docs.google.com/gview?embedded=true&url=" + url);
             }
+
+            if (callback != null) callback.onPageStarted(view, url, favicon);
         }
 
         @Override
@@ -1320,6 +1342,10 @@ public class FinestWebViewActivity extends AppCompatActivity
             if (injectJavaScript != null) {
                 webView.evaluateJavascript(injectJavaScript, null);
             }
+
+            if (callback != null) {
+                callback.onPageFinished(view, url);
+            }
         }
 
         public static final String INTENT_PROTOCOL_START = "intent:";
@@ -1329,6 +1355,11 @@ public class FinestWebViewActivity extends AppCompatActivity
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+            if (callback != null) {
+                callback.shouldOverrideUrlLoading(view, url);
+            }
+
             if (url.endsWith(".mp4")) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setDataAndType(Uri.parse(url), "video/*");
