@@ -193,7 +193,6 @@ public class FinestWebViewActivity extends AppCompatActivity
     protected Integer webViewCacheMode;
     protected Integer webViewMixedContentMode;
     protected Boolean webViewOffscreenPreRaster;
-    protected OnWebViewClientListener webViewClientListener = null;
 
     protected String injectJavaScript;
 
@@ -441,7 +440,6 @@ public class FinestWebViewActivity extends AppCompatActivity
         webViewCacheMode = builder.webViewCacheMode;
         webViewMixedContentMode = builder.webViewMixedContentMode;
         webViewOffscreenPreRaster = builder.webViewOffscreenPreRaster;
-        webViewClientListener = builder.webViewClientListener;
 
         injectJavaScript = builder.injectJavaScript;
 
@@ -641,7 +639,7 @@ public class FinestWebViewActivity extends AppCompatActivity
 
         { // WebView
             webView.setWebChromeClient(new MyWebChromeClient());
-            webView.setWebViewClient(new MyWebViewClient(this.webViewClientListener));
+            webView.setWebViewClient(new MyWebViewClient());
             webView.setDownloadListener(downloadListener);
 
             WebSettings settings = webView.getSettings();
@@ -1305,20 +1303,12 @@ public class FinestWebViewActivity extends AppCompatActivity
 
     public class MyWebViewClient extends WebViewClient {
 
-        private OnWebViewClientListener callback = null;
-
-        public MyWebViewClient(@Nullable OnWebViewClientListener callback) {
-            this.callback = callback;
-        }
-
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             BroadCastManager.onPageStarted(FinestWebViewActivity.this, key, url);
             if (!url.contains("docs.google.com") && url.endsWith(".pdf")) {
                 webView.loadUrl("http://docs.google.com/gview?embedded=true&url=" + url);
             }
-
-            if (callback != null) callback.onPageStarted(view, url, favicon);
         }
 
         @Override
@@ -1342,10 +1332,6 @@ public class FinestWebViewActivity extends AppCompatActivity
             if (injectJavaScript != null) {
                 webView.evaluateJavascript(injectJavaScript, null);
             }
-
-            if (callback != null) {
-                callback.onPageFinished(view, url);
-            }
         }
 
         public static final String INTENT_PROTOCOL_START = "intent:";
@@ -1355,10 +1341,6 @@ public class FinestWebViewActivity extends AppCompatActivity
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-
-            if (callback != null) {
-                callback.shouldOverrideUrlLoading(view, url);
-            }
 
             if (url.endsWith(".mp4")) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);

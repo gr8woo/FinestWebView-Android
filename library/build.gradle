@@ -16,6 +16,13 @@ android {
     versionCode rootProject.ext.versionCode
     versionName rootProject.ext.versionName
     vectorDrawables.useSupportLibrary = true
+
+    javaCompileOptions {
+      annotationProcessorOptions {
+        includeCompileClasspath false
+        arguments = ['library': 'true']
+      }
+    }
   }
 
   lintOptions {

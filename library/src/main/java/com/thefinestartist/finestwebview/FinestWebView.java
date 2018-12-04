@@ -17,7 +17,6 @@ import android.webkit.WebSettings;
 import com.thefinestartist.Base;
 import com.thefinestartist.finestwebview.enums.Position;
 import com.thefinestartist.finestwebview.listeners.BroadCastManager;
-import com.thefinestartist.finestwebview.listeners.OnWebViewClientListener;
 import com.thefinestartist.finestwebview.listeners.WebViewListener;
 import com.thefinestartist.utils.content.Ctx;
 import com.thefinestartist.utils.content.Res;
@@ -158,7 +157,6 @@ public class FinestWebView {
     protected Integer webViewCacheMode;
     protected Integer webViewMixedContentMode;
     protected Boolean webViewOffscreenPreRaster;
-    protected OnWebViewClientListener webViewClientListener;
 
     protected String injectJavaScript;
 
@@ -864,11 +862,6 @@ public class FinestWebView {
     public Builder webViewUserAgentString(String webViewUserAgentString, boolean isAppendable) {
       this.webViewUserAgentString = webViewUserAgentString;
       this.webViewUserAgentIsAppendable = isAppendable;
-      return this;
-    }
-
-    public Builder webViewClientListener(OnWebViewClientListener listener) {
-      this.webViewClientListener = listener;
       return this;
     }
 
