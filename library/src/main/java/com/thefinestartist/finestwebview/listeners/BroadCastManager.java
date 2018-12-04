@@ -71,13 +71,13 @@ public class BroadCastManager {
     sendBroadCast(context, intent);
   }
 
-  public static void onPageStarted(Context context, int key, String url) {
-    Intent intent = getBaseIntent(key, Type.PAGE_STARTED).putExtra(EXTRA_URL, url);
+  public static void onPageStarted(Context context, int key, String url, String userAgent) {
+    Intent intent = getBaseIntent(key, Type.PAGE_STARTED).putExtra(EXTRA_URL, url).putExtra(EXTRA_USER_AGENT, userAgent);
     sendBroadCast(context, intent);
   }
 
-  public static void onPageFinished(Context context, int key, String url) {
-    Intent intent = getBaseIntent(key, Type.PAGE_FINISHED).putExtra(EXTRA_URL, url);
+  public static void onPageFinished(Context context, int key, String url, String userAgent) {
+    Intent intent = getBaseIntent(key, Type.PAGE_FINISHED).putExtra(EXTRA_URL, url).putExtra(EXTRA_USER_AGENT, userAgent);
     sendBroadCast(context, intent);
   }
 

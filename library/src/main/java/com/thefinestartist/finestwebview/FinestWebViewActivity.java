@@ -1305,7 +1305,11 @@ public class FinestWebViewActivity extends AppCompatActivity
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            BroadCastManager.onPageStarted(FinestWebViewActivity.this, key, url);
+            String userAgent = "";
+            if (view != null) {
+                userAgent = view.getSettings().getUserAgentString();
+            }
+            BroadCastManager.onPageStarted(FinestWebViewActivity.this, key, url, userAgent);
             if (!url.contains("docs.google.com") && url.endsWith(".pdf")) {
                 webView.loadUrl("http://docs.google.com/gview?embedded=true&url=" + url);
             }
@@ -1313,7 +1317,11 @@ public class FinestWebViewActivity extends AppCompatActivity
 
         @Override
         public void onPageFinished(WebView view, String url) {
-            BroadCastManager.onPageFinished(FinestWebViewActivity.this, key, url);
+            String userAgent = "";
+            if (view != null) {
+                userAgent = view.getSettings().getUserAgentString();
+            }
+            BroadCastManager.onPageFinished(FinestWebViewActivity.this, key, url, userAgent);
 
             if (updateTitleFromHtml) title.setText(view.getTitle());
             urlTv.setText(UrlParser.getHost(url));
